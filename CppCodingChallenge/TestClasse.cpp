@@ -4,6 +4,7 @@
 
 TestClasse::TestClasse()
 {
+	gg
 }
 
 
