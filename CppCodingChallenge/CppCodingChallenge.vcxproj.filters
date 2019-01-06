@@ -27,6 +27,9 @@
     <ClInclude Include="ArithmeticExpression.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ArithmeticExpressionException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">

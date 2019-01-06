@@ -1,22 +1,24 @@
 #include "pch.h"
 #include "ArithmeticExpression.h"
+#include "ArithmeticExpressionException.h"
 
 int ArithmeticExpression::noErrorIndex=-1;
-int ArithmeticExpression::noErrorCode=0x00;
+int ArithmeticExpression::noErrorCode=NO_ERROR_CODE;
 
-const std::string ArithmeticExpression::OPEN_PARENTHESES_FIRST = "There no open parentheses for this ^";
-const std::string ArithmeticExpression::CLOSE_PARENTHESES = "You must close parentheses there ^";
-const std::string ArithmeticExpression::SYNTAXE_ERROR = "Syntaxe error there ^";
+const std::string ArithmeticExpression::OPEN_PAR_ERROR_MSG = "Openned parentheses too much";
+const std::string ArithmeticExpression::CLOSE_PAR_ERROR_MSG = "Clossed parentheses too much";
+const std::string ArithmeticExpression::SYNTAX_ERROR_MSG = "Syntaxe error";
+const std::string ArithmeticExpression::NO_ERROR_MSG = "";
 
 ArithmeticExpression::ArithmeticExpression()
 {
-
+	assertExpression();
 }
 
 
 ArithmeticExpression::ArithmeticExpression(std::string expression):c_expression(expression)
 {
-	checkSyntax(c_expression, c_indexError, c_codeError);
+	assertExpression();
 }
 
 ArithmeticExpression::~ArithmeticExpression()
@@ -24,116 +26,106 @@ ArithmeticExpression::~ArithmeticExpression()
 	
 }
 
-bool ArithmeticExpression::setExpression(std::string expression)
+void ArithmeticExpression::setExpression(std::string expression)
 {
 	c_expression = expression;
-	return checkSyntax(c_expression, c_indexError, c_codeError);
+	assertExpression();
 }
 
-
-std::string ArithmeticExpression::getCodeMsg()
+void ArithmeticExpression::assertExpression()
 {
-	switch (c_codeError)
-	{
-	case 0x01:
-		return SYNTAXE_ERROR;
-		break;
-	case 0x02:
-		return CLOSE_PARENTHESES;
-		break;
-	case 0x03:
-		return OPEN_PARENTHESES_FIRST;
-		break;
-	default:
-		return nullptr;
-		break;
-	}
+	int code, index;
+	if(checkSyntax(c_expression,index, code))
+		throw ArithmeticExpressionException(c_expression, code, index, getCodeMsg(code));
 }
 
 std::string ArithmeticExpression::getCodeMsg(int errorCode)
 {
 	switch (errorCode)
 	{
-	case 0x01:
-		return SYNTAXE_ERROR;
+	case SYNTAX_ERROR_CODE:
+		return SYNTAX_ERROR_MSG;
 		break;
-	case 0x02:
-		return CLOSE_PARENTHESES;
+	case OPEN_PAR_ERROR_CODE:
+		return OPEN_PAR_ERROR_MSG;
 		break;
-	case 0x03:
-		return OPEN_PARENTHESES_FIRST;
+	case CLOSE_PAR_ERROR_CODE:
+		return CLOSE_PAR_ERROR_MSG;
 		break;
 	default:
-		return nullptr;
+		return NO_ERROR_MSG;
 		break;
 	}
 }
 
 bool ArithmeticExpression::checkSyntax(std::string expression, int& errorIndex, int& errorCode)
 {
-	CharStat oldStat = EXP_BEGIN;
+	CharStat oldStat = EXP_BEGIN_CHAR;
 	int nmbrOpenParentheses = 0;
 	uint16_t i;
-	int exitErrorCode = 0;
+	int existErrorCode = NO_ERROR_CODE;
 	for (i = 0; i < expression.length(); i++)
 	{
 		if ((expression[i] >= '0' && expression[i] <= '9') &&
-			(oldStat == EXP_BEGIN || oldStat == OPERATOR || oldStat == OPEN_PARENT))
+			(oldStat == EXP_BEGIN_CHAR || oldStat == OPERATOR_CHAR || oldStat == OPEN_PARENT_CHAR))
 		{
-			oldStat = OPERAND;
+			oldStat = OPERAND_CHAR;
 			while (++i < expression.length() && expression[i] >= '0' && expression[i] <= '9');
 			i--;
 		}
 		else if ((expression[i] == '+' || expression[i] == '-' || expression[i] == '*' || expression[i] == '/') &&
-			(oldStat == OPERAND || oldStat == CLOSE_PARENT))
+			(oldStat == OPERAND_CHAR || oldStat == CLOSE_PARENT_CHAR))
 		{
-			oldStat = OPERATOR;
+			oldStat = OPERATOR_CHAR;
 		}
 		else if (expression[i] == '(' &&
-			(oldStat == EXP_BEGIN || oldStat == OPERATOR || oldStat == OPEN_PARENT))
+			(oldStat == EXP_BEGIN_CHAR || oldStat == OPERATOR_CHAR || oldStat == OPEN_PARENT_CHAR))
 		{
-			oldStat = OPEN_PARENT;
+			oldStat = OPEN_PARENT_CHAR;
 			nmbrOpenParentheses++;
 		}
 		else if (expression[i] == ')' &&
-			(oldStat == OPERAND || oldStat == CLOSE_PARENT))
+			(oldStat == OPERAND_CHAR || oldStat == CLOSE_PARENT_CHAR))
 		{
 			if (nmbrOpenParentheses == 0)
 			{
-				exitErrorCode = 0x03;
+				existErrorCode = CLOSE_PAR_ERROR_CODE;
 				break;
 			}
-			oldStat = CLOSE_PARENT;
+			oldStat = CLOSE_PARENT_CHAR;
 			nmbrOpenParentheses--;
 		}
 		else if ((expression[i] == '+' || expression[i] == '-') &&
-			(oldStat == EXP_BEGIN || oldStat == OPEN_PARENT || oldStat == OPERATOR) &&
+			(oldStat == EXP_BEGIN_CHAR || oldStat == OPEN_PARENT_CHAR || oldStat == OPERATOR_CHAR) &&
 			(++i < expression.length() && expression[i] >= '0' && expression[i] <= '9'))
 		{
-			oldStat = OPERAND;
+			oldStat = OPERAND_CHAR;
 			while (++i < expression.length() && expression[i] >= '0' && expression[i] <= '9');
 			i--;
 		}
 		else
 		{
-			exitErrorCode = 0x01;
+			existErrorCode = SYNTAX_ERROR_CODE;
 			break;
 		}
 	}
 
-	if (nmbrOpenParentheses > 0)
-		exitErrorCode = 0x02;
-
-	if (exitErrorCode)
+	if (existErrorCode == noErrorCode && nmbrOpenParentheses > 0)
 	{
-		if (errorIndex!=noErrorIndex)
+		existErrorCode = OPEN_PAR_ERROR_CODE;
+		i--;
+	}
+
+	if (existErrorCode!=NO_ERROR_CODE)
+	{
+		if (errorCode != noErrorCode)
 		{
-			if (exitErrorCode == 0x02)
-				i--;
+			errorCode = existErrorCode;
 			errorIndex = i;
+			return true;
 		}
-		if (errorCode!=noErrorCode)
-			errorCode = exitErrorCode;
+		if (errorIndex != noErrorIndex)
+			errorIndex = i;
 		return true;
 	}
 

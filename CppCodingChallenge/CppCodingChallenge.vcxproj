@@ -153,6 +153,7 @@
   <ItemGroup>
     <ClInclude Include="CharStat.h" />
     <ClInclude Include="ArithmeticExpression.h" />
+    <ClInclude Include="ArithmeticExpressionException.h" />
     <ClInclude Include="Header.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>

@@ -8,72 +8,117 @@
 #include <iostream>
 #include <string>
 #include"ArithmeticExpression.h"
+#include"ArithmeticExpressionException.h"
 
 using namespace std;
 
+void printError(const ArithmeticExpressionException &e)
+{
+	cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n";
+	cout << "ERROR : " << e.getExpression() << endl;
+	cout << "Code : " << e.getCode() << endl;
+	cout << "Message : " << e.what() << endl;
+	cout << "Placement : ";
+	cout << e.getExpression() << endl;
+	cout << "            ";
+	for (size_t i = 0; i < e.getIndex(); i++)
+		cout << " ";
+	cout << "^\n";
+	cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
+
+}
+
 int main()
 {
-	/*
-	const int nbrTest = 4;
-	Expression aritExp[nbrTest];
-	aritExp[0].setExpression("3+(5+(4*3))-12");
-	aritExp[1].setExpression("3+(5+(4+*3))-12");
-	aritExp[2].setExpression("3+((5+(4*3))-12");
-	aritExp[3].setExpression("3+(5+(4*3))-12)");
-
-	cout << "Test 1 :\n";
-	cout << aritExp[0];
-	if (Expression::checkSyntax(aritExp[0]))
-		std::cout << " : Error\n";
-	else
-		std::cout << " : Passed\n";
-
-	cout << "Test 2 :\n";
-	cout << aritExp[1];
-	if (Expression::checkSyntax(aritExp[1], errorIndex))
+	try
 	{
-		cout << " : Error there ^\n";
-		for (size_t i = 0; i < errorIndex; i++)
-			cout << " ";
-		std::cout << "^" << endl;
+		ArithmeticExpression aritExp1("3+(5+(4*3))-12");
 	}
-	else
-		std::cout << " : Passed\n";
-
-	std::cout << "Test 3 :\n";
-	std::cout << aritExp[2];
-	if (Expression::checkSyntax(aritExp[2], errorIndex,errorCode))
+	catch (const ArithmeticExpressionException& e)
 	{
-		std::cout << " : Error there ^\n";
-		for (size_t i = 0; i < errorIndex; i++)
-			std::cout << " ";
-		std::cout << "^" << endl;
+		printError(e);
 	}
-	else
-		std::cout << " : Passed\n";
-
-	std::cout << "Test 4 :\n";
-	std::cout << aritExp[3];
-	if (Expression::checkSyntax(aritExp[3], errorIndex, errorCode))
+	try
 	{
-		std::cout << " : Error there ^\n";
-		for (size_t i = 0; i < errorIndex; i++)
-			std::cout << " ";
-		std::cout << "^"<<endl;
+		ArithmeticExpression aritExp2("+3+(-5+(4*+3))-+12");
 	}
-	else
-		std::cout << " : Passed\n";
-	*/
+	catch (const ArithmeticExpressionException& e)
+	{
+		printError(e);
+	}
+	try
+	{
+		ArithmeticExpression aritExp3("++3+(5+(4*3))-12");
+	}
+	catch (const ArithmeticExpressionException& e)
+	{
+		printError(e);
+	}
+	try
+	{
+		ArithmeticExpression aritExp4("1++3+(5+(4*3))-12");
+	}
+	catch (const ArithmeticExpressionException& e)
+	{
+		printError(e);
+	}
+	try
+	{
+		ArithmeticExpression aritExp5("3+((5+(4*3))-12");
+	}
+	catch (const ArithmeticExpressionException& e)
+	{
+		printError(e);
+	}
+	try
+	{
+		ArithmeticExpression aritExp6("3+(5+(4*3)))-12");
+	}
+	catch (const ArithmeticExpressionException& e)
+	{
+		printError(e);
+	}
+	try
+	{
+		ArithmeticExpression aritExp7("3+(5+(4*3))-)12");
+	}
+	catch (const ArithmeticExpressionException& e)
+	{
+		printError(e);
+	}
+	try
+	{
+		ArithmeticExpression aritExp8("3+(5g+(4*3))-12");
+	}
+	catch (const ArithmeticExpressionException& e)
+	{
+		printError(e);
+	}
+	try
+	{
+		ArithmeticExpression aritExp9("3)+(5+(4*3))-12");
+	}
+	catch (const ArithmeticExpressionException& e)
+	{
+		printError(e);
+	}
 
-	ArithmeticExpression aritExp1("3+(5+(4*3))-12");
-	ArithmeticExpression aritExp2("+3+(-5+(4*+3))-+12");
-	ArithmeticExpression aritExp3("++3+(5+(4*3))-12");
-	ArithmeticExpression aritExp4("1++3+(5+(4*3))-12");
-	ArithmeticExpression aritExp5("3+((5+(4*3))-12");
-	ArithmeticExpression aritExp6("3+(5+(4*3)))-12");
-	ArithmeticExpression aritExp7("3+(5+(4*3))-)12");
-	ArithmeticExpression aritExp8("3+(5g+(4*3))-12");
-	ArithmeticExpression aritExp9("3)+(5+(4*3))-12");
+	ArithmeticExpression aritExp10;
+	try
+	{
+		aritExp10.setExpression("3+(5+(4-*3))-12");
+	}
+	catch (const ArithmeticExpressionException& e)
+	{
+		printError(e);
+	}
+
+	if(ArithmeticExpression::checkSyntax("3+(5+(4-*3))-12"))
+		cout << "3+(5+(4-*3))-12 : check syntaxe faillure"<< endl;
+
+	cout << endl << "Hello mouhcine!" << endl;
+
+
 
 }
 
