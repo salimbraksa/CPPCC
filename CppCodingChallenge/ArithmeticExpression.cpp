@@ -1,38 +1,78 @@
 #include "pch.h"
-#include "Expression.h"
+#include "ArithmeticExpression.h"
 
-int Expression::noErrorIndex=-1;
-int Expression::noErrorCode=0x00;
+int ArithmeticExpression::noErrorIndex=-1;
+int ArithmeticExpression::noErrorCode=0x00;
 
-Expression::Expression()
+const std::string ArithmeticExpression::OPEN_PARENTHESES_FIRST = "There no open parentheses for this ^";
+const std::string ArithmeticExpression::CLOSE_PARENTHESES = "You must close parentheses there ^";
+const std::string ArithmeticExpression::SYNTAXE_ERROR = "Syntaxe error there ^";
+
+ArithmeticExpression::ArithmeticExpression()
 {
+
 }
 
 
-Expression::Expression(std::string expression)
+ArithmeticExpression::ArithmeticExpression(std::string expression):c_expression(expression)
 {
-	c_expression = expression;
 	checkSyntax(c_expression, c_indexError, c_codeError);
 }
 
-Expression::~Expression()
+ArithmeticExpression::~ArithmeticExpression()
 {
+	
 }
 
-int Expression::getIndexError() const
+bool ArithmeticExpression::setExpression(std::string expression)
 {
-	return c_indexError;
+	c_expression = expression;
+	return checkSyntax(c_expression, c_indexError, c_codeError);
 }
 
-int Expression::getCodeError() const
+
+std::string ArithmeticExpression::getCodeMsg()
 {
-	return c_codeError;
+	switch (c_codeError)
+	{
+	case 0x01:
+		return SYNTAXE_ERROR;
+		break;
+	case 0x02:
+		return CLOSE_PARENTHESES;
+		break;
+	case 0x03:
+		return OPEN_PARENTHESES_FIRST;
+		break;
+	default:
+		return nullptr;
+		break;
+	}
 }
 
-bool Expression::checkSyntax(std::string expression, int& errorIndex, int& errorCode)
+std::string ArithmeticExpression::getCodeMsg(int errorCode)
+{
+	switch (errorCode)
+	{
+	case 0x01:
+		return SYNTAXE_ERROR;
+		break;
+	case 0x02:
+		return CLOSE_PARENTHESES;
+		break;
+	case 0x03:
+		return OPEN_PARENTHESES_FIRST;
+		break;
+	default:
+		return nullptr;
+		break;
+	}
+}
+
+bool ArithmeticExpression::checkSyntax(std::string expression, int& errorIndex, int& errorCode)
 {
 	CharStat oldStat = EXP_BEGIN;
-	int numPar = 0;
+	int nmbrOpenParentheses = 0;
 	uint16_t i;
 	int exitErrorCode = 0;
 	for (i = 0; i < expression.length(); i++)
@@ -53,18 +93,18 @@ bool Expression::checkSyntax(std::string expression, int& errorIndex, int& error
 			(oldStat == EXP_BEGIN || oldStat == OPERATOR || oldStat == OPEN_PARENT))
 		{
 			oldStat = OPEN_PARENT;
-			numPar++;
+			nmbrOpenParentheses++;
 		}
 		else if (expression[i] == ')' &&
 			(oldStat == OPERAND || oldStat == CLOSE_PARENT))
 		{
-			if (numPar == 0)
+			if (nmbrOpenParentheses == 0)
 			{
 				exitErrorCode = 0x03;
 				break;
 			}
 			oldStat = CLOSE_PARENT;
-			numPar--;
+			nmbrOpenParentheses--;
 		}
 		else if ((expression[i] == '+' || expression[i] == '-') &&
 			(oldStat == EXP_BEGIN || oldStat == OPEN_PARENT || oldStat == OPERATOR) &&
@@ -81,7 +121,7 @@ bool Expression::checkSyntax(std::string expression, int& errorIndex, int& error
 		}
 	}
 
-	if (numPar > 0)
+	if (nmbrOpenParentheses > 0)
 		exitErrorCode = 0x02;
 
 	if (exitErrorCode)

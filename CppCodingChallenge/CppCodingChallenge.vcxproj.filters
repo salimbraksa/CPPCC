@@ -18,13 +18,13 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Expression.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Header.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CharStat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ArithmeticExpression.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -35,7 +35,7 @@
     <ClCompile Include="CppCodingChallenge.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Expression.cpp">
+    <ClCompile Include="ArithmeticExpression.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

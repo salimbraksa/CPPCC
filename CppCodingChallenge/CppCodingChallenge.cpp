@@ -7,19 +7,19 @@
 #include "pch.h"
 #include <iostream>
 #include <string>
-#include"Expression.h"
+#include"ArithmeticExpression.h"
 
 using namespace std;
 
 int main()
 {
+	/*
 	const int nbrTest = 4;
-	int errorIndex, errorCode;
-	string aritExp[nbrTest];
-	aritExp[0] = "3+(5+(4*3))-12";
-	aritExp[1] = "3+(5+(4+*3))-12";
-	aritExp[2] = "3+((5+(4*3))-12";
-	aritExp[3] = "3+(5+(4*3))-12)";
+	Expression aritExp[nbrTest];
+	aritExp[0].setExpression("3+(5+(4*3))-12");
+	aritExp[1].setExpression("3+(5+(4+*3))-12");
+	aritExp[2].setExpression("3+((5+(4*3))-12");
+	aritExp[3].setExpression("3+(5+(4*3))-12)");
 
 	cout << "Test 1 :\n";
 	cout << aritExp[0];
@@ -63,9 +63,17 @@ int main()
 	}
 	else
 		std::cout << " : Passed\n";
+	*/
 
-
-
+	ArithmeticExpression aritExp1("3+(5+(4*3))-12");
+	ArithmeticExpression aritExp2("+3+(-5+(4*+3))-+12");
+	ArithmeticExpression aritExp3("++3+(5+(4*3))-12");
+	ArithmeticExpression aritExp4("1++3+(5+(4*3))-12");
+	ArithmeticExpression aritExp5("3+((5+(4*3))-12");
+	ArithmeticExpression aritExp6("3+(5+(4*3)))-12");
+	ArithmeticExpression aritExp7("3+(5+(4*3))-)12");
+	ArithmeticExpression aritExp8("3+(5g+(4*3))-12");
+	ArithmeticExpression aritExp9("3)+(5+(4*3))-12");
 
 }
 
