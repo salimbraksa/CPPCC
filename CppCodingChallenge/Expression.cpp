@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Expression.h"
 
+int Expression::noErrorIndex=-1;
+int Expression::noErrorCode=0x00;
 
 Expression::Expression()
 {
@@ -9,14 +11,25 @@ Expression::Expression()
 
 Expression::Expression(std::string expression)
 {
-
+	c_expression = expression;
+	checkSyntax(c_expression, c_indexError, c_codeError);
 }
 
 Expression::~Expression()
 {
 }
 
-bool Expression::checkSyntax(std::string expression, int* errorIndex, int* errorCode)
+int Expression::getIndexError() const
+{
+	return c_indexError;
+}
+
+int Expression::getCodeError() const
+{
+	return c_codeError;
+}
+
+bool Expression::checkSyntax(std::string expression, int& errorIndex, int& errorCode)
 {
 	CharStat oldStat = EXP_BEGIN;
 	int numPar = 0;
@@ -73,14 +86,14 @@ bool Expression::checkSyntax(std::string expression, int* errorIndex, int* error
 
 	if (exitErrorCode)
 	{
-		if (errorIndex)
+		if (errorIndex!=noErrorIndex)
 		{
 			if (exitErrorCode == 0x02)
 				i--;
-			*errorIndex = i;
+			errorIndex = i;
 		}
-		if (errorCode)
-			*errorCode = exitErrorCode;
+		if (errorCode!=noErrorCode)
+			errorCode = exitErrorCode;
 		return true;
 	}
 
