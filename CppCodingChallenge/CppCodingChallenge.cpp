@@ -36,11 +36,16 @@ int main()
 	
 	try
 	{
-		string str = "((((-1)-(+1)+1))+1)";
+		int a();
+		string str = "((1-4)+6)+6";
+		//double dbl = -999999999;
 		//string str = "3+(5+(4*3))-12";
 		//string str = "+1+(+2+(3*+4)/5)*+6/-7";
 		ArithmeticExpression aritExp1(str);
-		//cout << aritExp1;
+		cout << aritExp1 << endl;
+		//cout << atof(str.c_str()) << endl;
+		//ArithmeticExpression aritExp1;
+		//arit = "6/76";
 	}
 	catch (const ArithmeticExpressionException& e)
 	{

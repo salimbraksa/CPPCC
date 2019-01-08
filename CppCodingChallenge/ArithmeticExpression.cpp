@@ -12,17 +12,13 @@ const std::string ArithmeticExpression::CLOSE_PAR_ERROR_MSG = "Clossed parenthes
 const std::string ArithmeticExpression::SYNTAX_ERROR_MSG = "Syntaxe error";
 const std::string ArithmeticExpression::NO_ERROR_MSG = "";
 
-ArithmeticExpression::ArithmeticExpression()
-{
-	assertExpression();
-	performExpressions();
-}
 
 
-ArithmeticExpression::ArithmeticExpression(std::string expression):c_expression(expression)
+ArithmeticExpression::ArithmeticExpression(std::string expression) :c_expression(expression)
 {
 	assertExpression();//check expression if not valid, if the case a throw will produce
 	performExpressions();
+	evaluate();
 }
 
 ArithmeticExpression::~ArithmeticExpression()
@@ -35,6 +31,8 @@ void ArithmeticExpression::setExpression(std::string expression)
 {
 	c_expression = expression;
 	assertExpression();
+	performExpressions();
+	evaluate();
 }
 
 void ArithmeticExpression::assertExpression()
@@ -139,6 +137,48 @@ void ArithmeticExpression::performExpressions()
 			c_operators.push_back(c_expression[i]);
 		}
 	}
+
+}
+
+double stringToDouble(std::string c_expression)
+{
+	double c_value = 0;
+	int val = 1;
+	size_t i;
+	for (i = c_expression.length() - 1; i > 0; i--)
+	{
+		c_value += (c_expression[i] - '0') * val;
+		val *= 10;
+	}
+	if (i == 0)
+	{
+		if (c_expression[i] == '-')
+			c_value *= -1;
+		else if (c_expression[i] == '+');
+		else
+			c_value += (c_expression[i] - '0') * val;
+	}
+	return c_value;
+}
+
+double perfotmOpeation(double a, double b, char op)
+{
+	switch (op) {
+	case '+': return a + b;
+	case '-': return a - b;
+	case '*': return a * b;
+	case '/': return a / b;//WARNNING : remember to manage divide by zero exception
+	}
+}
+
+void ArithmeticExpression::evaluate()
+{
+	if (c_operands.empty())
+		c_value = stringToDouble(c_expression);
+	else if (c_operands.size() == 1)
+		c_value = c_operands.front()->c_value;
+	else if (c_operands.size() == 2)
+		c_value = perfotmOpeation(c_operands[0]->c_value, c_operands[1]->c_value, c_operators.front());
 
 }
 

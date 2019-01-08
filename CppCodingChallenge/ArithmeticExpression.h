@@ -15,8 +15,7 @@
 class ArithmeticExpression
 {
 public:
-	ArithmeticExpression();
-	ArithmeticExpression(std::string expression);
+	ArithmeticExpression(std::string expression="0");
 	~ArithmeticExpression();
 
 	void setExpression(std::string expression);
@@ -50,6 +49,7 @@ private:
 	std::vector<char> c_operators;					//vector to store operators	
 
 	void performExpressions();						//prepared expression for evaluation. private to make shure will not call from onther way
+	void evaluate();								//evaluate expression. private to make shure will not call from onther way
 
 
 };
