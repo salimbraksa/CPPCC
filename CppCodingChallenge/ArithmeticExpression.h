@@ -21,6 +21,7 @@ public:
 
 	void setExpression(std::string expression);
 
+	long double value()const { return c_value; }
 	//To make shure there no instance for ArithmeticExpression with invalid expression by producing a throw
 	void assertExpression();
 
@@ -44,10 +45,13 @@ public:
 
 private:
 	std::string c_expression;						//The valide expression
-	long double value;
-	std::vector<ArithmeticExpression> c_operands;
-	std::vector<ArithmeticExpression> c_operators;
+	double c_value;									//value of expression
+	std::vector<ArithmeticExpression*> c_operands;	//vector to store operands
+	std::vector<char> c_operators;					//vector to store operators	
+
+	void performExpressions();						//prepared expression for evaluation. private to make shure will not call from onther way
 
 
 };
 
+std::ostream& operator<<(std::ostream& flux, ArithmeticExpression const& expression);

@@ -7,6 +7,7 @@
 
 #include "pch.h"//Visual studio file
 #include <iostream>
+
 #include <string>
 #include "ArithmeticExpression.h"
 #include "ArithmeticExpressionException.h"
@@ -23,7 +24,7 @@ void printError(const ArithmeticExpressionException &e)
 	cout << "Placement : ";
 	cout << e.getExpression() << endl;
 	cout << "            ";
-	for (size_t i = 0; i < e.getIndex(); i++)
+	for (int i = 0; i < e.getIndex(); i++)
 		cout << " ";
 	cout << "^\n";
 	cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
@@ -32,14 +33,20 @@ void printError(const ArithmeticExpressionException &e)
 
 int main()
 {
+	
 	try
 	{
-		ArithmeticExpression aritExp1("3+(5+(4*3))-12");
+		string str = "((((-1)-(+1)+1))+1)";
+		//string str = "3+(5+(4*3))-12";
+		//string str = "+1+(+2+(3*+4)/5)*+6/-7";
+		ArithmeticExpression aritExp1(str);
+		//cout << aritExp1;
 	}
 	catch (const ArithmeticExpressionException& e)
 	{
 		printError(e);
 	}
+	/*
 	try
 	{
 		ArithmeticExpression aritExp2("+3+(-5+(4*+3))-+12");
@@ -102,6 +109,7 @@ int main()
 	}
 	catch (const ArithmeticExpressionException& e)
 	{
+
 		printError(e);
 	}
 
@@ -117,9 +125,9 @@ int main()
 
 	if(ArithmeticExpression::checkSyntax("3+(5+(4-*3))-12"))
 		cout << "3+(5+(4-*3))-12 : check syntaxe faillure"<< endl;
+	*/
+
 
 	cout << endl << "Hello mouhcine!" << endl;
-
-
 
 }

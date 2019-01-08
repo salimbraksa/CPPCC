@@ -4,8 +4,8 @@
 #include "ArithmeticExpression.h"
 #include "ArithmeticExpressionException.h"
 
-int ArithmeticExpression::noErrorIndex=-1;//no index for error
-int ArithmeticExpression::noErrorCode=NO_ERROR_CODE;//default error code 
+int ArithmeticExpression::noErrorIndex=-1;				//default index for no error
+int ArithmeticExpression::noErrorCode=NO_ERROR_CODE;	//default error code 
 
 const std::string ArithmeticExpression::OPEN_PAR_ERROR_MSG = "Openned parentheses too much";
 const std::string ArithmeticExpression::CLOSE_PAR_ERROR_MSG = "Clossed parentheses too much";
@@ -15,12 +15,14 @@ const std::string ArithmeticExpression::NO_ERROR_MSG = "";
 ArithmeticExpression::ArithmeticExpression()
 {
 	assertExpression();
+	performExpressions();
 }
 
 
 ArithmeticExpression::ArithmeticExpression(std::string expression):c_expression(expression)
 {
 	assertExpression();//check expression if not valid, if the case a throw will produce
+	performExpressions();
 }
 
 ArithmeticExpression::~ArithmeticExpression()
@@ -47,18 +49,100 @@ std::string ArithmeticExpression::getCodeMsg(int errorCode)
 	{
 	case SYNTAX_ERROR_CODE:
 		return SYNTAX_ERROR_MSG;
-		break;
 	case OPEN_PAR_ERROR_CODE:
 		return OPEN_PAR_ERROR_MSG;
-		break;
 	case CLOSE_PAR_ERROR_CODE:
 		return CLOSE_PAR_ERROR_MSG;
-		break;
-	default:
-		return NO_ERROR_MSG;
-		break;
 	}
+	return NO_ERROR_MSG;
 }
+
+
+
+bool isOperator(char& c)
+{
+	return c == '+' || c == '*' || c == '-' || c == '/';
+}
+
+bool isSign(char& c)
+{
+	return c == '+' || c == '-';
+}
+
+
+void ArithmeticExpression::performExpressions()
+{
+	//to devide the expression into sub expression each sub expression in new instance
+	// perform only on valide expression
+	
+	/*
+	** this function will look first if there a global parentheses for example :
+	** (A+B) expression content globalas parentheses not as A+B
+	** the (A+B) expression will look as that
+	**		Expression : (A+B)
+	**			Expression : A+B
+	**				Expression : A
+	**				Expression : B
+	** and the A+B expression will look as that
+	**			Expression : A+B
+	**				Expression : A
+	**				Expression : B
+	**
+	** then will look for operrand
+	** then for operator
+	*/
+
+	int nmbrOpennedPar = 0;
+
+	for (uint16_t i = 0, j = 0; i < c_expression.length(); i++)
+	{
+		if (c_expression[i] == '(')
+		{
+			//all content from openned parentheses to closed parentheses will put it in new expression as an operand
+
+			j = i;
+
+			nmbrOpennedPar++;
+
+			while (nmbrOpennedPar)
+			{
+				//we are shure there is an closed parentheses because this expression is valide
+				//so we dont need to check if j++ less thes length of expression 
+				j++;
+				if (c_expression[j] == ')')
+					nmbrOpennedPar--;
+				else if (c_expression[j] == '(')
+					nmbrOpennedPar++;
+			}
+
+			if (i == 0 && j == c_expression.length() - 1)//case of global parenthes
+			{
+				c_operands.push_back(new ArithmeticExpression(c_expression.substr(1, j - 1)));//we push expression whitout parentheses
+			}
+			else
+				c_operands.push_back(new ArithmeticExpression(c_expression.substr(i, j - i + 1)));//other case we push as normal operand
+
+			i = j;
+		}
+		else if (isdigit(c_expression[i]) || ((isSign(c_expression[i]) && (i == 0 || isOperator(c_expression[i - 1])))))
+		{// the case for normal operand or signed operand
+			j = i;
+			while (++j < c_expression.length() && isdigit(c_expression[j]));
+			j--;
+			if (i != 0 || j != c_expression.length() - 1)//to not push an other expression in case if we have only one operand
+				c_operands.push_back(new ArithmeticExpression(c_expression.substr(i, j - i + 1)));
+			i = j;
+		}
+		else
+		{ //because we are shure that is a valid expression, the remaining case is an operator
+			c_operators.push_back(c_expression[i]);
+		}
+	}
+
+}
+
+
+
 
 //static member function to check a syntax of expression 
 bool ArithmeticExpression::checkSyntax(std::string expression, int& errorIndex, int& errorCode)
@@ -75,18 +159,18 @@ bool ArithmeticExpression::checkSyntax(std::string expression, int& errorIndex, 
 		* old char must be an operator or openned parentheses
 		* or current char must be the first in expression
 		*/
-		if ((expression[i] >= '0' && expression[i] <= '9') &&
+		if (isdigit(expression[i]) &&
 			(oldStat == EXP_BEGIN_CHAR || oldStat == OPERATOR_CHAR || oldStat == OPEN_PARENT_CHAR))
 		{
 			oldStat = OPERAND_CHAR;
-			while (++i < expression.length() && expression[i] >= '0' && expression[i] <= '9');//if next char is number also will passed
+			while (++i < expression.length() && isdigit(expression[i]));//if next char is number also will passed
 			i--;
 		}
 		/*
 		* case if current char is an operator
 		* old char must be an nummber or clossed parentheses
 		*/
-		else if ((expression[i] == '+' || expression[i] == '-' || expression[i] == '*' || expression[i] == '/') &&
+		else if (isOperator(expression[i]) &&
 			(oldStat == OPERAND_CHAR || oldStat == CLOSE_PARENT_CHAR))
 		{
 			oldStat = OPERATOR_CHAR;
@@ -124,12 +208,12 @@ bool ArithmeticExpression::checkSyntax(std::string expression, int& errorIndex, 
 		* and the next char must be a number
 		* thats mean an signed operand
 		*/
-		else if ((expression[i] == '+' || expression[i] == '-') &&
+		else if (isSign(expression[i]) &&
 			(oldStat == EXP_BEGIN_CHAR || oldStat == OPEN_PARENT_CHAR || oldStat == OPERATOR_CHAR) &&
-			(++i < expression.length() && expression[i] >= '0' && expression[i] <= '9'))
+			(++i < expression.length() && isdigit(expression[i])))
 		{
 			oldStat = OPERAND_CHAR;
-			while (++i < expression.length() && expression[i] >= '0' && expression[i] <= '9');
+			while (++i < expression.length() && isdigit(expression[i]));
 			i--;
 		}
 		/*
@@ -166,4 +250,10 @@ bool ArithmeticExpression::checkSyntax(std::string expression, int& errorIndex, 
 	}
 
 	return false;
+}
+
+std::ostream& operator<<(std::ostream& flux, ArithmeticExpression const& expression)
+{
+	flux << expression.value();
+	return flux;
 }
