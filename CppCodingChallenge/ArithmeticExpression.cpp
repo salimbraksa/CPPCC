@@ -27,7 +27,8 @@ ArithmeticExpression::ArithmeticExpression(std::string expression):c_expression(
 
 ArithmeticExpression::~ArithmeticExpression()
 {
-	
+	for (ArithmeticExpression* x : c_operands)
+		delete x;
 }
 
 void ArithmeticExpression::setExpression(std::string expression)
