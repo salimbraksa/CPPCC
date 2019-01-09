@@ -29,6 +29,14 @@ ArithmeticExpression::~ArithmeticExpression()
 
 void ArithmeticExpression::setExpression(std::string expression)
 {
+	c_value = 0;
+
+	for (ArithmeticExpression* x : c_operands)
+		delete x;
+	c_operands.clear();
+
+	c_operators.clear();
+
 	c_expression = expression;
 	assertExpression();
 	performExpressions();

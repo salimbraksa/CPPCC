@@ -36,11 +36,39 @@ int main()
 	
 	try
 	{
-		string str = "3+(5+(4*3))-12";//8
-		ArithmeticExpression aritExp(str);
+		string str;
+		ArithmeticExpression aritExp;
 
+		str = "3+(5+(4*3))-12";//8
+		aritExp.setExpression(str);
 		cout << str << " = " << aritExp << endl;
 
+		str = "(5*6)-(40+(1))";//-11
+		aritExp.setExpression(str);
+		cout << str << " = " << aritExp << endl;
+
+		str = "(((3+6)*(2-4))+9)";//-9
+		aritExp.setExpression(str);
+		cout << str << " = " << aritExp << endl;
+
+		str = "(((3+6)*(2-4))+9)";//-9
+		aritExp.setExpression(str);
+		cout << str << " = " << aritExp << endl;
+
+		/*
+		str = "1+1*2";//3
+		aritExp.setExpression(str);
+		cout << str << " = " << aritExp << endl;
+
+		str = "1*2+1";//3
+		aritExp.setExpression(str);
+		cout << str << " = " << aritExp << endl;
+
+		str = "";//0
+		aritExp.setExpression(str);
+		cout << str << " = " << aritExp << endl;
+
+		*/
 	}
 	catch (const ArithmeticExpressionException& e)
 	{
