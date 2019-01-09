@@ -14,7 +14,15 @@ const std::string ArithmeticExpression::NO_ERROR_MSG = "";
 
 
 
-ArithmeticExpression::ArithmeticExpression(std::string expression) :c_expression(expression)
+ArithmeticExpression::ArithmeticExpression()
+{
+	c_expression = "0";
+	assertExpression();//check expression if not valid, if the case a throw will produce
+	performExpressions();
+	evaluate();
+}
+
+ArithmeticExpression::ArithmeticExpression(std::string expression) :c_expression(expression.empty() ? "0" : expression)
 {
 	assertExpression();//check expression if not valid, if the case a throw will produce
 	performExpressions();
@@ -37,7 +45,7 @@ void ArithmeticExpression::setExpression(std::string expression)
 
 	c_operators.clear();
 
-	c_expression = expression;
+	c_expression = expression.empty() ? "0": expression;
 	assertExpression();
 	performExpressions();
 	evaluate();

@@ -15,7 +15,8 @@
 class ArithmeticExpression
 {
 public:
-	ArithmeticExpression(std::string expression="0");
+	ArithmeticExpression();
+	ArithmeticExpression(std::string expression);
 	~ArithmeticExpression();
 
 	void setExpression(std::string expression);

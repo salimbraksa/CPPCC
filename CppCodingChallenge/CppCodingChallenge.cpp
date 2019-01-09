@@ -39,36 +39,35 @@ int main()
 		string str;
 		ArithmeticExpression aritExp;
 
-		str = "3+(5+(4*3))-12";//8
+		str = "3+(5+(4*3))-12";// 8 real value with calculator
 		aritExp.setExpression(str);
 		cout << str << " = " << aritExp << endl;
 
-		str = "(5*6)-(40+(1))";//-11
+		str = "(5*6)-(40+(1))";// -11 real value with calculator
 		aritExp.setExpression(str);
 		cout << str << " = " << aritExp << endl;
 
-		str = "(((3+6)*(2-4))+9)";//-9
+		str = "(((3+6)*(2-4))+9)";// -9 real value with calculator
 		aritExp.setExpression(str);
 		cout << str << " = " << aritExp << endl;
 
-		str = "(((3+6)*(2-4))+9)";//-9
+		str = "(8*(9+9)*5-(3*6-(3*5+2)))";// 719 real value with calculator
 		aritExp.setExpression(str);
 		cout << str << " = " << aritExp << endl;
 
-		/*
-		str = "1+1*2";//3
+		
+		str = "1+1*2";// 3 real value with calculator
 		aritExp.setExpression(str);
 		cout << str << " = " << aritExp << endl;
 
-		str = "1*2+1";//3
+		str = "1*2+1";// 3 real value with calculator
 		aritExp.setExpression(str);
 		cout << str << " = " << aritExp << endl;
 
-		str = "";//0
+		str = "";// muste be 0
 		aritExp.setExpression(str);
 		cout << str << " = " << aritExp << endl;
 
-		*/
 	}
 	catch (const ArithmeticExpressionException& e)
 	{
