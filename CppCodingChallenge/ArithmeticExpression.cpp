@@ -161,7 +161,7 @@ double stringToDouble(std::string c_expression)
 	return c_value;
 }
 
-double perfotmOpeation(double a, double b, char op)
+double performOpeation(double a, double b, char op)
 {
 	switch (op) {
 	case '+': return a + b;
@@ -170,7 +170,13 @@ double perfotmOpeation(double a, double b, char op)
 	case '/': return a / b;//WARNNING : remember to manage divide by zero exception
 	}
 }
-
+int operationPriority(char op) 
+{
+	if (op == '+' || op == '-')
+		return 0;
+	if (op == '*' || op == '/')
+		return 1;
+}
 void ArithmeticExpression::evaluate()
 {
 	if (c_operands.empty())
@@ -178,8 +184,45 @@ void ArithmeticExpression::evaluate()
 	else if (c_operands.size() == 1)
 		c_value = c_operands.front()->c_value;
 	else if (c_operands.size() == 2)
-		c_value = perfotmOpeation(c_operands[0]->c_value, c_operands[1]->c_value, c_operators.front());
+		c_value = performOpeation(c_operands[0]->c_value, c_operands[1]->c_value, c_operators.front());
+	else
+	{
+		size_t i = 0;
+		double value;
+		char op;
 
+		op = ' ';
+		value = 0;
+		c_value = c_operands[i]->c_value;
+		while (i + 1 < c_operands.size())
+		{
+			c_value = c_operands[i]->c_value;
+			while (i + 1 < c_operators.size() && operationPriority(c_operators[i]) >= operationPriority(c_operators[i + 1]))
+			{
+				c_value = performOpeation(c_value, c_operands[i + 1]->c_value, c_operators[i]);
+				i++;
+			}
+			if (i + 1 == c_operators.size())
+			{
+				c_value = performOpeation(c_value, c_operands[i + 1]->c_value, c_operators[i]);
+				i++;
+				if (op != ' ')
+				{
+					c_value = performOpeation(value, c_value, op);
+					op = ' ';
+				}
+			}
+			else
+			{
+				if (op != ' ')
+					c_value = performOpeation(value, c_value, op);
+				value = c_value;
+				op = c_operators[i];
+			}
+			i++;
+		}
+
+	}
 }
 
 
