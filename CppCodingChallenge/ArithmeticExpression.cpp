@@ -1,6 +1,6 @@
 // ArithmeticExpression cpp file by MouhcineFD
 
-#include "pch.h"//For visual Studion
+#include "pch.h"//For visual Studio
 #include "ArithmeticExpression.h"
 #include "ArithmeticExpressionException.h"
 
@@ -13,19 +13,49 @@ const std::string ArithmeticExpression::SYNTAX_ERROR_MSG = "Syntaxe error";
 const std::string ArithmeticExpression::NO_ERROR_MSG = "";
 
 
-
 ArithmeticExpression::ArithmeticExpression()
 {
 	c_expression = "0";
-	assertExpression();//check expression if not valid, if the case a throw will produce
-	performExpressions();
-	evaluate();
+	assertExpression();//check syntax expression if valid, if is not the case a throw will produce
+	performExpressions();//prepare expression to evaluation by make it as a tree
+	evaluate();//the evauate function start from the last level in the tree,it's look like a recursive function
+	// for exemple these expression 1+2*(3+4)-5
+	//***** 1+2*(3+4)+5 :
+	//            |----> Operands :
+	//            |            |------> 1
+	//            |            |------> 2
+	//            |            |------> (3+4) :
+	//            |      	   |		     |------> 3+4 :
+	//			  |			   |					   |----> Operands :
+	//            |            |                       |           |------> 3
+	//            |            |                       |           |------> 4
+	//			  |			   |					   |----> Operator :
+	//            |            |                                   |------> +
+	//            |            |------> 5
+	//            |----> Operator :
+	//                        |------> +
+	//                        |------> *
+	//                        |------> -
+
+	/* the evaluation methode will execute in this order : 
+	*
+	* First :	 1		  --> 1
+	* 2nd   :	 2		  --> 2
+	* 3rd   :	 3		  --> 3
+	* 4th   :	 4		  --> 4
+	* 5th   :	 3+4	  --> 7
+	* 6th   :	 (3+4)	  --> 7
+	* 7th   :	 5		  --> 5
+	* 8th   :	 1+2*7-5  --> 10
+	*
+	* the result is 10
+	*/
 }
 
 ArithmeticExpression::ArithmeticExpression(std::string expression) :c_expression(expression.empty() ? "0" : expression)
 {
-	assertExpression();//check expression if not valid, if the case a throw will produce
-	performExpressions();
+	assertExpression();//check syntax expression if valid, if is not the case a throw will produce
+	performExpressions();//prepare expression to evaluation by make it as a tree
 	evaluate();
 }
 
@@ -87,8 +117,8 @@ bool isSign(char& c)
 
 void ArithmeticExpression::performExpressions()
 {
-	//to devide the expression into sub expression each sub expression in new instance
-	// perform only on valide expression
+	//to devide the expression into sub expression each sub expression in new instance of ArithmeticExpression
+	//Warning performExpressions performed only on valide input expression
 	
 	/*
 	** this function will look first if there a global parentheses for example :
@@ -156,17 +186,21 @@ void ArithmeticExpression::performExpressions()
 
 }
 
+//Warning no characters checks performs, all characters must be digit and the first char it could be plus or minus sign
 double stringToDouble(std::string c_expression)
 {
 	double c_value = 0;
 	int val = 1;
 	size_t i;
+
+	//calculate value from last char to second
 	for (i = c_expression.length() - 1; i > 0; i--)
 	{
 		c_value += (c_expression[i] - '0') * val;
 		val *= 10;
 	}
-	if (i == 0)
+	//check first character is sign or digit
+	if (i == 0)//if i not zero mean expression is emtpy
 	{
 		if (c_expression[i] == '-')
 			c_value *= -1;
@@ -195,45 +229,74 @@ int operationPriority(char op)
 }
 void ArithmeticExpression::evaluate()
 {
+	//first case : only root node in tree, there no operands only 
+	//Expression Exemple : A , B, C
+	// **** A :
+	//the value of expression is the value in string no evalution methode nedded
 	if (c_operands.empty())
 		c_value = stringToDouble(c_expression);
+	//second case : tree with one node
+	//Expression Exemple : (A) , (B+C)
+	// **** (A) :
+	//		 |----> A :
+	//or
+	// **** (B+C) :
+	//		 |----> B+C :
+	//				 |----> B :
+	//				 |----> + :
+	//				 |----> C :
+	//value of expression is the value of child
 	else if (c_operands.size() == 1)
 		c_value = c_operands.front()->c_value;
+	//third case : tow node or tow operand and one operator
+	//here we need to perform the operation to get the result
+	//Expression Exemple : B*C
+	// **** (B*C) :
+	//		 |----> B*C :
+	//				 |----> B :
+	//				 |----> * :
+	//				 |----> C :
 	else if (c_operands.size() == 2)
 		c_value = performOpeation(c_operands[0]->c_value, c_operands[1]->c_value, c_operators.front());
 	else
 	{
-		size_t i = 0;
-		double value;
-		char op;
+		//the others cases when the expression content more than tow operand or more than one operation
+		//to evaluate we need to perform first the operation who has the priority 
+		//Expression Exemple : 1+2*3+4*5
+		//we perform first 2*3 then 1+6, then 4*5 ,and 7+20
 
-		op = ' ';
-		value = 0;
-		c_value = c_operands[i]->c_value;
-		while (i + 1 < c_operands.size())
+		size_t i = 0;
+		double restValue=0;
+		char restOperator=' ';
+
+		//loop for all operators
+		while (i  < c_operands.size())
 		{
+			//First will perform all operation if the current operator has a priority equal or great than the next operator
+			//for example A*B*C+D+E*F+G will calculate A*B*C+D and exit the loop
 			c_value = c_operands[i]->c_value;
 			while (i + 1 < c_operators.size() && operationPriority(c_operators[i]) >= operationPriority(c_operators[i + 1]))
 			{
 				c_value = performOpeation(c_value, c_operands[i + 1]->c_value, c_operators[i]);
 				i++;
 			}
+			//then check if we are comme in the last operator
 			if (i + 1 == c_operators.size())
 			{
+				//if the case we calculate last operation
 				c_value = performOpeation(c_value, c_operands[i + 1]->c_value, c_operators[i]);
-				i++;
-				if (op != ' ')
-				{
-					c_value = performOpeation(value, c_value, op);
-					op = ' ';
-				}
+				//and the check if the are an aoperation in rest if the case we calculate also
+				if (restOperator != ' ')
+					c_value = performOpeation(restValue, c_value, restOperator);
+				break;//then break the loop because we are calculated all operations
 			}
-			else
+			else//the case if the current operator has priority less then the next
 			{
-				if (op != ' ')
-					c_value = performOpeation(value, c_value, op);
-				value = c_value;
-				op = c_operators[i];
+				if (restOperator != ' ')//we check first if the are alreday an rest opeator, if the case will calculate
+					c_value = performOpeation(restValue, c_value, restOperator);
+				//then store current value and current operation for the next iteration
+				restValue = c_value;
+				restOperator = c_operators[i];
 			}
 			i++;
 		}

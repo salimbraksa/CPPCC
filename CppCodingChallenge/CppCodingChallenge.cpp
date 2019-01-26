@@ -152,8 +152,25 @@ int main()
 
 	if(ArithmeticExpression::checkSyntax("3+(5+(4-*3))-12"))
 		cout << "3+(5+(4-*3))-12 : check syntaxe faillure"<< endl;
-	*/
+	
 
+
+try
+{
+	string str;
+	cin >> str;
+
+	ArithmeticExpression aritExp;
+
+	aritExp.setExpression(str);
+	cout << str << " = " << aritExp << endl;
+
+}
+catch (const ArithmeticExpressionException& e)
+{
+	printError(e);
+}
+*/
 
 
 }
