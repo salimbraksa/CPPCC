@@ -1,25 +1,24 @@
 // ArithmeticExpression cpp file by MouhcineFD
 
-#include "pch.h"//For visual Studio
 #include "ArithmeticExpression.h"
 #include "ArithmeticExpressionException.h"
+#include "../lib/GeneralItem.h"
 
 int ArithmeticExpression::noErrorIndex=-1;				//default index for no error
 int ArithmeticExpression::noErrorCode=NO_ERROR_CODE;	//default error code 
 
-const std::string ArithmeticExpression::OPEN_PAR_ERROR_MSG = "Openned parentheses too much";
-const std::string ArithmeticExpression::CLOSE_PAR_ERROR_MSG = "Clossed parentheses too much";
-const std::string ArithmeticExpression::SYNTAX_ERROR_MSG = "Syntaxe error";
+const std::string ArithmeticExpression::OPEN_PAR_ERROR_MSG = "Opened parentheses too much";
+const std::string ArithmeticExpression::CLOSE_PAR_ERROR_MSG = "Closed parentheses too much";
+const std::string ArithmeticExpression::SYNTAX_ERROR_MSG = "Syntax error";
 const std::string ArithmeticExpression::NO_ERROR_MSG = "";
-
 
 ArithmeticExpression::ArithmeticExpression()
 {
 	c_expression = "0";
 	assertExpression();//check syntax expression if valid, if is not the case a throw will produce
 	performExpressions();//prepare expression to evaluation by make it as a tree
-	evaluate();//the evauate function start from the last level in the tree,it's look like a recursive function
-	// for exemple these expression 1+2*(3+4)-5
+	evaluate();//the evaluate function start from the last level in the tree,it's look like a recursive function
+	// for example these expression 1+2*(3+4)-5
 	//***** 1+2*(3+4)+5 :
 	//            |----> Operands :
 	//            |            |------> 1
@@ -37,7 +36,7 @@ ArithmeticExpression::ArithmeticExpression()
 	//                        |------> *
 	//                        |------> -
 
-	/* the evaluation methode will execute in this order : 
+	/* the evaluation function will execute in this order : 
 	*
 	* First :	 1		  --> 1
 	* 2nd   :	 2		  --> 2
@@ -102,27 +101,14 @@ std::string ArithmeticExpression::getCodeMsg(int errorCode)
 	return NO_ERROR_MSG;
 }
 
-
-
-bool isOperator(char& c)
-{
-	return c == '+' || c == '*' || c == '-' || c == '/';
-}
-
-bool isSign(char& c)
-{
-	return c == '+' || c == '-';
-}
-
-
 void ArithmeticExpression::performExpressions()
 {
-	//to devide the expression into sub expression each sub expression in new instance of ArithmeticExpression
-	//Warning performExpressions performed only on valide input expression
+	//to divide the expression into sub expression each sub expression in new instance of ArithmeticExpression
+	//Warning performExpressions performed only on valid input expression
 	
 	/*
 	** this function will look first if there a global parentheses for example :
-	** (A+B) expression content globalas parentheses not as A+B
+	** (A+B) expression content globals parentheses not as A+B
 	** the (A+B) expression will look as that
 	**		Expression : (A+B)
 	**			Expression : A+B
@@ -133,7 +119,7 @@ void ArithmeticExpression::performExpressions()
 	**				Expression : A
 	**				Expression : B
 	**
-	** then will look for operrand
+	** then will look for operand
 	** then for operator
 	*/
 
@@ -143,7 +129,7 @@ void ArithmeticExpression::performExpressions()
 	{
 		if (c_expression[i] == '(')
 		{
-			//all content from openned parentheses to closed parentheses will put it in new expression as an operand
+			//all content from opened parentheses to closed parentheses will put it in new expression as an operand
 
 			j = i;
 
@@ -151,8 +137,8 @@ void ArithmeticExpression::performExpressions()
 
 			while (nmbrOpennedPar)
 			{
-				//we are shure there is an closed parentheses because this expression is valide
-				//so we dont need to check if j++ less thes length of expression 
+				//we are sure there is an closed parentheses because this expression is valid
+				//so we don't need to check if j++ less then length of expression 
 				j++;
 				if (c_expression[j] == ')')
 					nmbrOpennedPar--;
@@ -160,9 +146,9 @@ void ArithmeticExpression::performExpressions()
 					nmbrOpennedPar++;
 			}
 
-			if (i == 0 && j == c_expression.length() - 1)//case of global parenthes
+			if (i == 0 && j == c_expression.length() - 1)//case of global parentheses
 			{
-				c_operands.push_back(new ArithmeticExpression(c_expression.substr(1, j - 1)));//we push expression whitout parentheses
+				c_operands.push_back(new ArithmeticExpression(c_expression.substr(1, j - 1)));//we push expression without parentheses
 			}
 			else
 				c_operands.push_back(new ArithmeticExpression(c_expression.substr(i, j - i + 1)));//other case we push as normal operand
@@ -179,64 +165,23 @@ void ArithmeticExpression::performExpressions()
 			i = j;
 		}
 		else
-		{ //because we are shure that is a valid expression, the remaining case is an operator
+		{ //because we are sure that is a valid expression, the remaining case is an operator
 			c_operators.push_back(c_expression[i]);
 		}
 	}
 
 }
 
-//Warning no characters checks performs, all characters must be digit and the first char it could be plus or minus sign
-double stringToDouble(std::string c_expression)
-{
-	double c_value = 0;
-	int val = 1;
-	size_t i;
-
-	//calculate value from last char to second
-	for (i = c_expression.length() - 1; i > 0; i--)
-	{
-		c_value += (c_expression[i] - '0') * val;
-		val *= 10;
-	}
-	//check first character is sign or digit
-	if (i == 0)//if i not zero mean expression is emtpy
-	{
-		if (c_expression[i] == '-')
-			c_value *= -1;
-		else if (c_expression[i] == '+');
-		else
-			c_value += (c_expression[i] - '0') * val;
-	}
-	return c_value;
-}
-
-double performOpeation(double a, double b, char op)
-{
-	switch (op) {
-	case '+': return a + b;
-	case '-': return a - b;
-	case '*': return a * b;
-	case '/': return a / b;//WARNNING : remember to manage divide by zero exception
-	}
-}
-int operationPriority(char op) 
-{
-	if (op == '+' || op == '-')
-		return 0;
-	if (op == '*' || op == '/')
-		return 1;
-}
 void ArithmeticExpression::evaluate()
 {
 	//first case : only root node in tree, there no operands only 
-	//Expression Exemple : A , B, C
+	//Expression Example : A , B, C
 	// **** A :
-	//the value of expression is the value in string no evalution methode nedded
+	//the value of expression is the value in string no evaluation method needed
 	if (c_operands.empty())
 		c_value = stringToDouble(c_expression);
 	//second case : tree with one node
-	//Expression Exemple : (A) , (B+C)
+	//Expression Example : (A) , (B+C)
 	// **** (A) :
 	//		 |----> A :
 	//or
@@ -250,7 +195,7 @@ void ArithmeticExpression::evaluate()
 		c_value = c_operands.front()->c_value;
 	//third case : tow node or tow operand and one operator
 	//here we need to perform the operation to get the result
-	//Expression Exemple : B*C
+	//Expression Example : B*C
 	// **** (B*C) :
 	//		 |----> B*C :
 	//				 |----> B :
@@ -262,7 +207,7 @@ void ArithmeticExpression::evaluate()
 	{
 		//the others cases when the expression content more than tow operand or more than one operation
 		//to evaluate we need to perform first the operation who has the priority 
-		//Expression Exemple : 1+2*3+4*5
+		//Expression Example : 1+2*3+4*5
 		//we perform first 2*3 then 1+6, then 4*5 ,and 7+20
 
 		size_t i = 0;
@@ -280,19 +225,19 @@ void ArithmeticExpression::evaluate()
 				c_value = performOpeation(c_value, c_operands[i + 1]->c_value, c_operators[i]);
 				i++;
 			}
-			//then check if we are comme in the last operator
+			//then check if we are come in the last operator
 			if (i + 1 == c_operators.size())
 			{
 				//if the case we calculate last operation
 				c_value = performOpeation(c_value, c_operands[i + 1]->c_value, c_operators[i]);
-				//and the check if the are an aoperation in rest if the case we calculate also
+				//and the check if the are an operation in rest if the case we calculate also
 				if (restOperator != ' ')
 					c_value = performOpeation(restValue, c_value, restOperator);
 				break;//then break the loop because we are calculated all operations
 			}
 			else//the case if the current operator has priority less then the next
 			{
-				if (restOperator != ' ')//we check first if the are alreday an rest opeator, if the case will calculate
+				if (restOperator != ' ')//we check first if the are already an rest operator, if the case will calculate
 					c_value = performOpeation(restValue, c_value, restOperator);
 				//then store current value and current operation for the next iteration
 				restValue = c_value;
@@ -303,9 +248,6 @@ void ArithmeticExpression::evaluate()
 
 	}
 }
-
-
-
 
 //static member function to check a syntax of expression 
 bool ArithmeticExpression::checkSyntax(std::string expression, int& errorIndex, int& errorCode)
@@ -319,7 +261,7 @@ bool ArithmeticExpression::checkSyntax(std::string expression, int& errorIndex, 
 	{
 		/*
 		* case if current char is an number
-		* old char must be an operator or openned parentheses
+		* old char must be an operator or opened parentheses
 		* or current char must be the first in expression
 		*/
 		if (isdigit(expression[i]) &&
@@ -331,7 +273,7 @@ bool ArithmeticExpression::checkSyntax(std::string expression, int& errorIndex, 
 		}
 		/*
 		* case if current char is an operator
-		* old char must be an nummber or clossed parentheses
+		* old char must be an number or closed parentheses
 		*/
 		else if (isOperator(expression[i]) &&
 			(oldStat == OPERAND_CHAR || oldStat == CLOSE_PARENT_CHAR))
@@ -356,7 +298,7 @@ bool ArithmeticExpression::checkSyntax(std::string expression, int& errorIndex, 
 		else if (expression[i] == ')' &&
 			(oldStat == OPERAND_CHAR || oldStat == CLOSE_PARENT_CHAR))
 		{
-			//if number oppened parrentheses equal zero that mean we closed an parrentheses whithout oppenned an clossed error existe
+			//if number opened parentheses equal zero that mean we closed an parentheses without opened an closed error exist
 			if (nmbrOpenedParentheses == 0)
 			{
 				existErrorCode = CLOSE_PAR_ERROR_CODE;
@@ -381,7 +323,7 @@ bool ArithmeticExpression::checkSyntax(std::string expression, int& errorIndex, 
 		}
 		/*
 		* if not all cases
-		* a syntax error existe
+		* a syntax error exist
 		*/
 		else
 		{
@@ -390,15 +332,15 @@ bool ArithmeticExpression::checkSyntax(std::string expression, int& errorIndex, 
 		}
 	}
 
-	//if no error existe and number of openned parentheses different zero that mean there a openned parentheses not colosed
-	//an openned error existe in expression
+	//if no error exist and number of opened parentheses different zero that mean there a opened parentheses not closed
+	//an opened error exist in expression
 	if (existErrorCode == noErrorCode && nmbrOpenedParentheses > 0)
 	{
 		existErrorCode = OPEN_PAR_ERROR_CODE;
 		i--;//decrement index because the loop finished not breaked
 	}
 
-	//to check optionals argumments
+	//to check optionals arguments
 	if (existErrorCode!=NO_ERROR_CODE)
 	{
 		if (errorCode != noErrorCode)

@@ -5,16 +5,15 @@
 ** GSM : +212658406658
 */
 
-#include "pch.h"//Visual studio file
 #include <iostream>
 
 #include <string>
-#include "ArithmeticExpression.h"
-#include "ArithmeticExpressionException.h"
+#include "src/ArithmeticExpression.h"
+#include "src/ArithmeticExpressionException.h"
 
 using namespace std;
 
-//Temporrary UserOutput console error
+//Temporary UserOutput console error
 void printError(const ArithmeticExpressionException &e)
 {
 	cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n";

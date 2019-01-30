@@ -1,8 +1,8 @@
 // ArithmeticExpressionException file by MouhcineFD
-// each exception centent an invalid expression string
+// each exception content an invalid expression string
 // and code number of error
 // and the index of error in expression
-// and descreption of error
+// and description of error
 
 #pragma once
 #include<exception>

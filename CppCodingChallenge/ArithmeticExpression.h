@@ -1,6 +1,6 @@
  // ArithmeticExpression header file by MouhcineFD
 
-#pragma once//Visual Studion define once style
+#pragma once//Visual Studio define once
 
 #include <string>
 #include <vector>
@@ -22,13 +22,13 @@ public:
 	void setExpression(std::string expression);
 
 	long double value()const { return c_value; }
-	//To make shure there no instance for ArithmeticExpression with invalid expression by producing a throw
+	//To make sure there no instance for ArithmeticExpression with invalid expression by producing a throw
 	void assertExpression();
 
 	
 	//*************** Static members and methods ***************\\
 
-	//checkSyntaxe to check expression syntaxe with optional arguments for external use
+	//checkSyntaxe to check expression syntax with optional arguments for external use
 	static bool checkSyntax(std::string expression, int& errorIndex = noErrorIndex, int& errorCode = noErrorCode);
 	static std::string getCodeMsg(int errorCode);
 
@@ -44,13 +44,13 @@ public:
 
 
 private:
-	std::string c_expression;						//The valide expression
+	std::string c_expression;						//valid expression
 	double c_value;									//value of expression
 	std::vector<ArithmeticExpression*> c_operands;	//vector to store operands
 	std::vector<char> c_operators;					//vector to store operators	
 
-	void performExpressions();						//prepared expression for evaluation. private to make shure will not call from onther way
-	void evaluate();								//evaluate expression. private to make shure will not call from onther way
+	void performExpressions();						//prepared expression for evaluation. private to make sure will not call from other way
+	void evaluate();								//evaluate expression. private to make sure will not call from other way
 
 
 };
