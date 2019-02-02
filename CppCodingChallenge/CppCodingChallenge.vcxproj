@@ -26,7 +26,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CppCodingChallenge.cpp" />
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="src\ArithmeticExpression.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

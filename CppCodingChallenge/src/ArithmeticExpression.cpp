@@ -1,5 +1,6 @@
 // ArithmeticExpression cpp file by MouhcineFD
 
+#include <iostream>
 #include "ArithmeticExpression.h"
 #include "ArithmeticExpressionException.h"
 #include "../lib/GeneralItem.h"
@@ -357,8 +358,7 @@ bool ArithmeticExpression::checkSyntax(std::string expression, int& errorIndex, 
 	return false;
 }
 
-std::ostream& operator<<(std::ostream& flux, ArithmeticExpression const& expression)
-{
-	flux << expression.value();
-	return flux;
+std::ostream & operator<<(std::ostream & out,ArithmeticExpression const& expression) {
+   out << expression.c_value;
+   return out;
 }

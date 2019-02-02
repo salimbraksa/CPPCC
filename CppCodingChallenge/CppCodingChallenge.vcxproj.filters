@@ -9,6 +9,5 @@
   <ItemGroup>
     <ClCompile Include="src\ArithmeticExpression.cpp" />
     <ClCompile Include="CppCodingChallenge.cpp" />
-    <ClCompile Include="main.cpp" />
   </ItemGroup>
 </Project>

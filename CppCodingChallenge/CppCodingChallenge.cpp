@@ -1,4 +1,4 @@
-/* 
+/*
 ** C++ Coding Challenge for United Remote
 ** The application of FAIRADI MOUHCINE (MouhcineFD)
 ** mail: mouhcinefd@outlook.com
@@ -30,14 +30,12 @@ void printError(const ArithmeticExpressionException &e)
 
 }
 
-int main()
+void sampleValidExp()
 {
-	
+	string str;
+	ArithmeticExpression aritExp;
 	try
 	{
-		string str;
-		ArithmeticExpression aritExp;
-
 		str = "3+(5+(4*3))-12";// 8 real value with calculator
 		aritExp.setExpression(str);
 		cout << str << " = " << aritExp << endl;
@@ -54,7 +52,6 @@ int main()
 		aritExp.setExpression(str);
 		cout << str << " = " << aritExp << endl;
 
-		
 		str = "1+1*2";// 3 real value with calculator
 		aritExp.setExpression(str);
 		cout << str << " = " << aritExp << endl;
@@ -63,7 +60,7 @@ int main()
 		aritExp.setExpression(str);
 		cout << str << " = " << aritExp << endl;
 
-		str = "";// muste be 0
+		str = "";// must be 0
 		aritExp.setExpression(str);
 		cout << str << " = " << aritExp << endl;
 
@@ -72,104 +69,111 @@ int main()
 	{
 		printError(e);
 	}
-	/*
-	try
-	{
-		ArithmeticExpression aritExp2("+3+(-5+(4*+3))-+12");
-	}
-	catch (const ArithmeticExpressionException& e)
-	{
-		printError(e);
-	}
-	try
-	{
-		ArithmeticExpression aritExp3("++3+(5+(4*3))-12");
-	}
-	catch (const ArithmeticExpressionException& e)
-	{
-		printError(e);
-	}
-	try
-	{
-		ArithmeticExpression aritExp4("1++3+(5+(4*3))-12");
-	}
-	catch (const ArithmeticExpressionException& e)
-	{
-		printError(e);
-	}
-	try
-	{
-		ArithmeticExpression aritExp5("3+((5+(4*3))-12");
-	}
-	catch (const ArithmeticExpressionException& e)
-	{
-		printError(e);
-	}
-	try
-	{
-		ArithmeticExpression aritExp6("3+(5+(4*3)))-12");
-	}
-	catch (const ArithmeticExpressionException& e)
-	{
-		printError(e);
-	}
-	try
-	{
-		ArithmeticExpression aritExp7("3+(5+(4*3))-)12");
-	}
-	catch (const ArithmeticExpressionException& e)
-	{
-		printError(e);
-	}
-	try
-	{
-		ArithmeticExpression aritExp8("3+(5g+(4*3))-12");
-	}
-	catch (const ArithmeticExpressionException& e)
-	{
-		printError(e);
-	}
-	try
-	{
-		ArithmeticExpression aritExp9("3)+(5+(4*3))-12");
-	}
-	catch (const ArithmeticExpressionException& e)
-	{
+}
 
-		printError(e);
-	}
-
-	ArithmeticExpression aritExp10;
+void sampleInvalidExp()
+{
 	try
 	{
-		aritExp10.setExpression("3+(5+(4-*3))-12");
+		ArithmeticExpression aritExp("+3+(-5+(4*+3))-+12");
 	}
 	catch (const ArithmeticExpressionException& e)
 	{
 		printError(e);
 	}
 
-	if(ArithmeticExpression::checkSyntax("3+(5+(4-*3))-12"))
-		cout << "3+(5+(4-*3))-12 : check syntaxe faillure"<< endl;
+	try
+	{
+		ArithmeticExpression aritExp("++3+(5+(4*3))-12");
+	}
+	catch (const ArithmeticExpressionException& e)
+	{
+		printError(e);
+	}
+
+	try
+	{
+		ArithmeticExpression aritExp("1++3+(5+(4*3))-12");
+	}
+	catch (const ArithmeticExpressionException& e)
+	{
+		printError(e);
+	}
+
+	try
+	{
+		ArithmeticExpression aritExp("3+((5+(4*3))-12");
+	}
+	catch (const ArithmeticExpressionException& e)
+	{
+		printError(e);
+	}
+
+	try
+	{
+		ArithmeticExpression aritExp("3+(5+(4*3)))-12");
+	}
+	catch (const ArithmeticExpressionException& e)
+	{
+		printError(e);
+	}
+
+	try
+	{
+		ArithmeticExpression aritExp("3+(5+(4*3))-)12");
+	}
+	catch (const ArithmeticExpressionException& e)
+	{
+		printError(e);
+	}
+
+	try
+	{
+		ArithmeticExpression aritExp("3+(5g+(4*3))-12");
+	}
+	catch (const ArithmeticExpressionException& e)
+	{
+		printError(e);
+	}
+
+	try
+	{
+		ArithmeticExpression aritExp("3)+(5+(4*3))-12");
+	}
+	catch (const ArithmeticExpressionException& e)
+	{
+
+		printError(e);
+	}
+}
+
+int main()
+{
+	string expresion;
+	cout << "Enter an expression : ";
+	cin >> expresion;
+
+	try
+	{
+		ArithmeticExpression aritExp(expresion);
+		cout << expresion << " = " << aritExp << endl;
+	}
+	catch (const ArithmeticExpressionException& e)
+	{
+		printError(e);
+	}
 	
+	//Decomment to see result for some valid expression
+	//sampleValidExp();
 
+	//Decomment to see result for some invalid expression
+	//sampleInvalidExp();
 
-try
-{
-	string str;
-	cin >> str;
-
-	ArithmeticExpression aritExp;
-
-	aritExp.setExpression(str);
-	cout << str << " = " << aritExp << endl;
-
-}
-catch (const ArithmeticExpressionException& e)
-{
-	printError(e);
-}
-*/
-
-
+	//we can check an expression if valid, without evaluate
+	//we can use the optional arguments if we want know more about the error
+	/*
+	expresion = "3+(5+(4-*3))-12";
+	if (ArithmeticExpression::checkSyntax(expresion))
+		cout << expresion << " : check syntax failure" << endl;
+	*/
 }

@@ -42,6 +42,8 @@ public:
 	static const std::string SYNTAX_ERROR_MSG;
 	static const std::string NO_ERROR_MSG;
 
+	friend std::ostream & operator<<(std::ostream & out,ArithmeticExpression const& expression);
+
 
 private:
 	std::string c_expression;						//valid expression
@@ -55,4 +57,3 @@ private:
 
 };
 
-std::ostream& operator<<(std::ostream& flux, ArithmeticExpression const& expression);
